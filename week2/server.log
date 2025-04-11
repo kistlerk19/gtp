@@ -1,0 +1,52 @@
+[2025-04-10 08:00:07.345] [INFO] [main] Server - Starting ServerApplication using Java 17.0.8 with PID 12345
+[2025-04-10 08:00:08.127] [INFO] [main] Server - No active profile set, falling back to default profiles: default
+[2025-04-10 08:00:10.563] [INFO] [main] DatabaseManager - Database connection established successfully
+[2025-04-10 08:00:11.892] [INFO] [main] CacheManager - Initializing cache with capacity: 2048MB
+[2025-04-10 08:00:12.451] [INFO] [main] Server - Started ServerApplication in 5.236 seconds (process running for 6.021)
+[2025-04-10 08:05:23.113] [INFO] [http-nio-8080-exec-1] RequestProcessor - Received request: GET /api/v1/users from 192.168.1.105
+[2025-04-10 08:05:23.245] [DEBUG] [http-nio-8080-exec-1] AuthenticationManager - User authenticated: admin
+[2025-04-10 08:05:23.387] [INFO] [http-nio-8080-exec-1] ResponseHandler - Request processed successfully in 274ms
+[2025-04-10 08:07:45.634] [INFO] [http-nio-8080-exec-2] RequestProcessor - Received request: POST /api/v1/products from 192.168.1.201
+[2025-04-10 08:07:45.834] [WARN] [http-nio-8080-exec-2] ValidationService - Validation failed: product name cannot be empty
+[2025-04-10 08:07:45.892] [INFO] [http-nio-8080-exec-2] ResponseHandler - Returned status 400 Bad Request in 258ms
+[2025-04-10 08:15:32.715] [ERROR] [Timer-0] DatabaseManager - Connection timeout after 30000ms
+[2025-04-10 08:15:33.109] [INFO] [Timer-0] DatabaseManager - Attempting to reconnect to database (attempt 1/5)
+[2025-04-10 08:15:36.452] [INFO] [Timer-0] DatabaseManager - Database connection re-established successfully
+[2025-04-10 08:32:17.892] [INFO] [http-nio-8080-exec-3] RequestProcessor - Received request: GET /api/v1/orders/1234 from 192.168.1.105
+[2025-04-10 08:32:18.123] [DEBUG] [http-nio-8080-exec-3] CacheManager - Cache hit for key: order:1234
+[2025-04-10 08:32:18.187] [INFO] [http-nio-8080-exec-3] ResponseHandler - Request processed successfully in 295ms
+[2025-04-10 09:01:45.237] [WARN] [monitoring-thread] ResourceMonitor - High CPU usage detected: 87%
+[2025-04-10 09:01:45.340] [WARN] [monitoring-thread] ResourceMonitor - High memory usage detected: 76% of allocated heap
+[2025-04-10 09:02:15.452] [INFO] [monitoring-thread] ResourceMonitor - Resource usage returned to normal levels
+[2025-04-10 09:15:03.781] [INFO] [http-nio-8080-exec-4] RequestProcessor - Received request: PUT /api/v1/users/5678 from 192.168.1.110
+[2025-04-10 09:15:03.987] [DEBUG] [http-nio-8080-exec-4] AuthenticationManager - User authenticated: manager
+[2025-04-10 09:15:04.234] [INFO] [http-nio-8080-exec-4] UserService - User profile updated successfully
+[2025-04-10 09:15:04.312] [INFO] [http-nio-8080-exec-4] ResponseHandler - Request processed successfully in 531ms
+[2025-04-10 09:30:28.459] [INFO] [scheduled-task-1] MaintenanceService - Starting scheduled database cleanup
+[2025-04-10 09:31:05.127] [INFO] [scheduled-task-1] MaintenanceService - Removed 2345 expired sessions
+[2025-04-10 09:31:37.893] [INFO] [scheduled-task-1] MaintenanceService - Scheduled database cleanup completed successfully
+[2025-04-10 10:12:18.723] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - Uncaught exception: java.lang.NullPointerException
+[2025-04-10 10:12:18.724] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - at com.example.service.ReportService.generateReport(ReportService.java:248)
+[2025-04-10 10:12:18.725] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - at com.example.controller.ReportController.downloadReport(ReportController.java:87)
+[2025-04-10 10:12:18.892] [INFO] [http-nio-8080-exec-5] ResponseHandler - Returned status 500 Internal Server Error in 354ms
+[2025-04-10 10:15:32.459] [INFO] [file-watcher] ConfigurationManager - Configuration file changed, reloading settings
+[2025-04-10 10:15:33.217] [INFO] [file-watcher] ConfigurationManager - Configuration reloaded successfully
+[2025-04-10 10:45:12.348] [INFO] [http-nio-8080-exec-6] RequestProcessor - Received request: GET /api/v1/health from 192.168.1.10
+[2025-04-10 10:45:12.456] [INFO] [http-nio-8080-exec-6] HealthCheckService - All systems operational
+[2025-04-10 10:45:12.501] [INFO] [http-nio-8080-exec-6] ResponseHandler - Request processed successfully in 153ms
+[2025-04-10 11:23:05.127] [WARN] [monitoring-thread] SecurityMonitor - Detected multiple failed login attempts for user: jsmith
+[2025-04-10 11:23:05.234] [INFO] [monitoring-thread] SecurityMonitor - Temporarily blocking login attempts for user: jsmith (15 minutes)
+[2025-04-10 11:30:45.893] [INFO] [http-nio-8080-exec-7] RequestProcessor - Received request: DELETE /api/v1/cache from 192.168.1.105
+[2025-04-10 11:30:46.012] [DEBUG] [http-nio-8080-exec-7] AuthenticationManager - User authenticated: admin
+[2025-04-10 11:30:46.345] [INFO] [http-nio-8080-exec-7] CacheManager - Cache cleared successfully
+[2025-04-10 11:30:46.459] [INFO] [http-nio-8080-exec-7] ResponseHandler - Request processed successfully in 566ms
+[2025-04-10 12:00:00.001] [INFO] [scheduled-task-2] BackupService - Starting scheduled backup process
+[2025-04-10 12:03:45.782] [INFO] [scheduled-task-2] BackupService - Backup completed successfully, size: 2.7GB
+[2025-04-10 12:15:28.349] [INFO] [Thread-5] NotificationService - Sending batch notifications to 127 users
+[2025-04-10 12:17:12.578] [INFO] [Thread-5] NotificationService - Successfully sent 122 notifications, 5 failed
+[2025-04-10 12:30:01.453] [INFO] [health-check] HealthChecker - Database response time: 45ms
+[2025-04-10 12:30:01.567] [INFO] [health-check] HealthChecker - API response time: 87ms
+[2025-04-10 12:30:01.689] [INFO] [health-check] HealthChecker - Cache hit ratio: 78.5%
+[2025-04-10 13:05:22.341] [INFO] [http-nio-8080-exec-8] RequestProcessor - Received request: GET /api/v1/metrics from 192.168.1.105
+[2025-04-10 13:05:22.521] [DEBUG] [http-nio-8080-exec-8] AuthenticationManager - User authenticated: admin
+[2025-04-10 13:05:22.891] [INFO] [http-nio-8080-exec-8] ResponseHandler - Request processed successfully in 550ms

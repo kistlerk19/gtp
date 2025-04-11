@@ -1,0 +1,4 @@
+[2025-04-10 08:15:32.715] [ERROR] [Timer-0] DatabaseManager - Connection timeout after 30000ms
+[2025-04-10 10:12:18.723] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - Uncaught exception: java.lang.NullPointerException
+[2025-04-10 10:12:18.724] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - at com.example.service.ReportService.generateReport(ReportService.java:248)
+[2025-04-10 10:12:18.725] [ERROR] [http-nio-8080-exec-5] ExceptionHandler - at com.example.controller.ReportController.downloadReport(ReportController.java:87)

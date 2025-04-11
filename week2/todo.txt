@@ -1,0 +1,229 @@
+GTP DevOps
+Date: Monday, April 7
+Session: Technical Lesson
+Time: 1300 GMT
+Duration: 1.5hrs
+Guide: Aminu
+
+1. Install Prometheus on Ubuntu
+
+    sudo apt update && sudo apt upgrade -y
+
+  - Create Prometheus user & group
+
+    sudo groupadd --system prometheus
+
+    sudo useradd -s /sbin/nologin --system -g prometheus prometheus
+
+  - Create directories
+
+    sudo mkdir /etc/prometheus /var/lib/prometheus
+
+  - Download & extract Prometheus
+
+    wget https://github.com/prometheus/prometheus/releases/download/v2.43.0/prometheus-2.43.0.linux-amd64.tar.gz
+
+    tar xvf prometheus-*.tar.gz
+
+    cd prometheus-*
+
+  - Move binaries & set ownership
+
+    sudo mv prometheus promtool /usr/local/bin/
+
+    sudo chown prometheus:prometheus /usr/local/bin/{prometheus,promtool}
+
+  - Move config & consoles, set ownership
+
+    sudo mv consoles console_libraries prometheus.yml /etc/prometheus/
+
+    sudo chown -R prometheus:prometheus /etc/prometheus /var/lib/prometheus
+
+  - Create systemd service (/etc/systemd/system/prometheus.service):
+
+    sudo nano /etc/systemd/system/prometheus.service
+
+      [Unit]
+      Description=Prometheus
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=prometheus
+      Group=prometheus
+      Type=simple
+      ExecStart=/usr/local/bin/prometheus \
+        --config.file /etc/prometheus/prometheus.yml \
+        --storage.tsdb.path /var/lib/prometheus/ \
+        --web.console.templates=/etc/prometheus/consoles \
+        --web.console.libraries=/etc/prometheus/console_libraries
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - Reload & start service
+
+    sudo systemctl daemon-reload
+
+    sudo systemctl enable --now prometheus
+
+    sudo systemctl status prometheus
+
+  - Allow Prometheus port
+
+    # with each port opened, make sure the same port is opened in the security group
+
+    sudo ufw allow 9090/tcp   # opens port 9090 on the server
+
+    sudo ufw allow 22/tcp     # opens port 22 (ssh) on the server
+
+
+2. Build a Python Exporter
+
+  - Create & Use a Virtual Environment
+    Keeps your project isolated and lets you use pip freely.
+
+    sudo apt-get update
+
+    sudo apt-get install -y python3-venv python3-pip
+
+    # create venv in your home directory
+    python3 -m venv monitoring-env
+
+    source monitoring-env/bin/activate
+
+    # now pip installs go into your venv
+    pip install psutil prometheus-client
+
+  - Create python_exporter.py:
+    nano python_exporter.py
+
+      #!/usr/bin/env python3
+      import time
+      import psutil
+      from prometheus_client import start_http_server, Gauge
+
+      # Define Gauges
+      cpu_gauge   = Gauge('system_cpu_percent', 'System CPU usage (%)')
+      mem_gauge   = Gauge('system_memory_percent', 'System memory usage (%)')
+      disk_read   = Gauge('system_disk_read_bytes', 'Disk read bytes')
+      disk_write  = Gauge('system_disk_write_bytes', 'Disk write bytes')
+      net_sent    = Gauge('system_network_bytes_sent', 'Network bytes sent')
+      net_recv    = Gauge('system_network_bytes_recv', 'Network bytes received')
+
+      def collect_metrics():
+          cpu_gauge.set(psutil.cpu_percent(interval=1))
+          mem_gauge.set(psutil.virtual_memory().percent)
+          io = psutil.disk_io_counters()
+          disk_read.set(io.read_bytes)
+          disk_write.set(io.write_bytes)
+          net = psutil.net_io_counters()
+          net_sent.set(net.bytes_sent)
+          net_recv.set(net.bytes_recv)
+
+      if __name__ == '__main__':
+          # Expose metrics on :8000/metrics
+          start_http_server(8000)
+          while True:
+              collect_metrics()
+              time.sleep(5)
+
+  - Run the exporter
+
+    python3 python_exporter.py  # this will block the terminal. you can run in the background or use cron
+
+
+3. Configure Prometheus to Scrape the Exporter
+
+  - Edit /etc/prometheus/prometheus.yml and add under scrape_configs:
+
+    sudo /etc/prometheus/prometheus.yml
+
+     job_name: 'python_exporter'
+      static_configs:
+        - targets: ['localhost:8000']
+
+  - Then reload Prometheus:
+
+    sudo systemctl restart prometheus
+
+
+4. Install Grafana on Ubuntu 24.04
+
+  - Install dependencies
+
+    sudo apt-get install -y apt-transport-https software-properties-common wget
+
+  - Import Grafana GPG key
+
+    sudo mkdir -p /etc/apt/keyrings
+
+    wget -q -O - https://apt.grafana.com/gpg.key \
+      | gpg --dearmor \
+      | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+
+  - Add Grafana APT repo
+
+    echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] \
+      https://apt.grafana.com stable main" \
+      | sudo tee /etc/apt/sources.list.d/grafana.list
+
+  - Update & install Grafana
+
+    sudo apt-get update
+
+    sudo apt-get install grafana -y
+
+  - Start & enable Grafana
+
+    sudo systemctl start grafana-server
+
+    sudo systemctl enable grafana-server
+
+    sudo ufw allow 3000/tcp
+
+
+5. Visualize Metrics in Grafana
+
+  - Access Grafana
+    Open your browser at http://<server_ip>:3000
+    Default login: admin / admin (you'll be prompted to reset)
+
+  - Add Prometheus Data Source
+
+    Name: Prometheus
+    URL: http://localhost:9090
+    Click Save & Test
+
+  - Build a Dashboard
+
+    Panel_1: CPU Usage
+    Query: system_cpu_percent
+    Type: Gauge or Time series
+
+
+    Panel_2: Memory Usage
+    Query: system_memory_percent
+
+    Panel: Disk I/O
+    Queries: system_disk_read_bytes, system_disk_write_bytes
+
+    Panel: Network I/O
+    Queries: system_network_bytes_sent, system_network_bytes_recv
+
+    Set Refresh Interval to 5s
+
+You'll now have real‑time charts of your system's CPU,
+memory, disk and network metrics—all collected by your Python exporter,
+scraped by Prometheus, and visualized in Grafana!
+
+
+[BONUS]
+6. Setting up Grafana Alerts
+
+    Link: https://www.fosstechnix.com/how-to-configure-email-alerts-in-grafana/
+
+    - Step #3:Configure SMTP Settings,
+    - Step #5:Add a Contact points
+    - Step #6:Configure the Notification Policies
+    - Step #7:Configure Alert Rules to get email alerts

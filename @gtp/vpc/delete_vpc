@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 if [ "$#" -ne 4 ]; then
-    echo "Usage: $0 <vpc-id> <igw-id> <subnet-id> <route-table-id>"
+    echo "Usage: $0 VPC_ID IGW_ID SUBNET_ID RTB_ID"
     exit 1
 fi
 
-VPC_ID="$1"
-IGW_ID="$2"
-SUBNET_ID="$3"
-RTB_ID="$4"
+VPC_ID="$(echo "$1" | tr -d '[:space:]')"
+IGW_ID="$(echo "$2" | tr -d '[:space:]')"
+SUBNET_ID="$(echo "$3" | tr -d '[:space:]')"
+RTB_ID="$(echo "$4" | tr -d '[:space:]')"
 
 echo "Detaching IGW: $IGW_ID from VPC: $VPC_ID"
 aws ec2 detach-internet-gateway \
@@ -33,4 +32,4 @@ echo "Deleting VPC: $VPC_ID"
 aws ec2 delete-vpc \
   --vpc-id "$VPC_ID"
 
-echo "✅ Teardown complete."
+echo "Teardown completed."
